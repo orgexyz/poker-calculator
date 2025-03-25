@@ -1,0 +1,19 @@
+{
+  "name": "Poker Equity Calculator",
+  "short_name": "Poker Calc",
+  "description": "Calculate poker hand equity for Texas Hold'em, Omaha, and Super Hold'em games",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/globe.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["tools", "games", "utility"],
+  "orientation": "any",
+  "scope": "/"
+}
