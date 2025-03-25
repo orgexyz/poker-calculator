@@ -2,8 +2,8 @@ const isGithubPages = process.env.NODE_ENV === 'production'
 
 const nextConfig = {
   output: 'export', // Important for GitHub Pages
-  assetPrefix: isGithubPages ? '/REPO_NAME/' : '',
-  basePath: isGithubPages ? '/REPO_NAME' : '',
+  assetPrefix: isGithubPages ? '/poker-calculator/' : '',
+  basePath: isGithubPages ? '/poker-calculator' : '',
   trailingSlash: true, // Optional, often improves routing compatibility
 }
 
