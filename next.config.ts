@@ -1,7 +1,10 @@
-import type { NextConfig } from "next";
+const isGithubPages = process.env.NODE_ENV === 'production'
 
-const nextConfig: NextConfig = {
-  /* config options here */
-};
+const nextConfig = {
+  output: 'export', // Important for GitHub Pages
+  assetPrefix: isGithubPages ? '/REPO_NAME/' : '',
+  basePath: isGithubPages ? '/REPO_NAME' : '',
+  trailingSlash: true, // Optional, often improves routing compatibility
+}
 
-export default nextConfig;
+module.exports = nextConfig
