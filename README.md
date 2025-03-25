@@ -10,7 +10,7 @@ A fast, accurate, and mobile-friendly poker hand equity calculator for Texas Hol
 - **Real-time Equity Calculation**: Instantly see win and tie percentages
 - **Mobile-Friendly**: Responsive design works on desktop and mobile devices
 - **Multi-player Support**: Calculate equity for up to 6 players
-- **Fast Performance**: Uses Monte Carlo simulation with 20,000 runouts for speed and accuracy
+- **Fast Performance**: Uses Monte Carlo simulation with random runouts for speed and accuracy
 - **Intuitive UI**: Easy-to-use card selector and clear visual presentation
 - **Progressive Web App**: Can be installed on mobile devices for offline use
 

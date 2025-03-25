@@ -124,7 +124,7 @@ export default function Home() {
         <span className="inline-block ml-2 text-amber-500 cursor-help relative group text-sm align-text-top">
           ⓘ
           <span className="hidden group-hover:block absolute top-full left-1/2 transform -translate-x-1/2 w-72 p-2 bg-gray-800 text-white dark:bg-gray-700 text-xs leading-tight rounded shadow-lg z-10 mt-1">
-            For optimal mobile performance, this calculator uses a Monte Carlo simulation with 20,000 random runouts. While this provides a close approximation rather than exact equity, it ensures fast calculations across all devices.
+            For optimal mobile performance, this calculator uses a Monte Carlo simulation with random runouts. While this provides a close approximation rather than exact equity, it ensures fast calculations across all devices.
           </span>
         </span>
       </h1>
