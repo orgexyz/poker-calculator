@@ -22,6 +22,7 @@ export default function Home() {
   const [activeSelector, setActiveSelector] = useState<number | 'board'>(0);
   const [gameType, setGameType] = useState<GameType>('texas-holdem');
   const [isCalculating, setIsCalculating] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
 
   // Remove or comment out the unused allCards variable
   // const allCards = [...hands.flat(), ...board];
@@ -121,13 +122,34 @@ export default function Home() {
       </div>
       <h1 className="text-2xl sm:text-4xl font-bold mb-6 sm:mb-8 pt-3 text-center dark:text-white">
         Poker Equity Calculator
-        <span className="inline-block ml-2 text-amber-500 cursor-help relative group text-sm align-text-top">
+        <span
+          className="inline-block ml-2 text-amber-500 cursor-pointer relative text-sm align-text-top transition-colors hover:text-amber-600 active:text-amber-700"
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowTooltip(!showTooltip);
+          }}
+          aria-label="Information about calculation method"
+        >
           ⓘ
-          <span className="hidden group-hover:block absolute top-full left-1/2 transform -translate-x-1/2 w-72 p-2 bg-gray-800 text-white dark:bg-gray-700 text-xs leading-tight rounded shadow-lg z-10 mt-1">
-            For optimal mobile performance, this calculator uses a Monte Carlo simulation with random runouts. While this provides a close approximation rather than exact equity, it ensures fast calculations across all devices.
-          </span>
+          {showTooltip && (
+            <span
+              className="absolute top-full left-1/2 transform -translate-x-1/2 w-72 sm:w-80 p-3 bg-gray-800 text-white dark:bg-gray-700 text-xs leading-tight rounded shadow-lg z-20 mt-1 animate-fade-in border border-amber-500/50"
+            >
+              For optimal mobile performance, this calculator uses a Monte Carlo simulation with 20,000 random runouts. While this provides a close approximation rather than exact equity, it ensures fast calculations across all devices.
+              <div className="mt-2 text-right text-amber-300 text-[10px]">Tap anywhere to close</div>
+            </span>
+          )}
         </span>
       </h1>
+
+      {/* Close tooltip when clicking anywhere else on the page */}
+      {showTooltip && (
+        <div
+          className="fixed inset-0 z-10 bg-transparent"
+          onClick={() => setShowTooltip(false)}
+          aria-hidden="true"
+        />
+      )}
 
       <div className="max-w-6xl mx-auto">
         {/* Game controls */}
