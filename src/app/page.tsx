@@ -13,8 +13,8 @@ import {
 const MAX_PLAYERS = 6;
 
 export default function Home() {
-  const [hands, setHands] = useState<CardType[][]>(Array(2).fill([]));
-  const [board, setBoard] = useState<CardType[]>([]);
+  const [hands, setHands] = useState<(CardType | undefined)[][]>(Array(2).fill([]));
+  const [board, setBoard] = useState<(CardType | undefined)[]>([]);
   const [equity, setEquity] = useState<{
     equities: number[];
     ties: number[];
@@ -30,19 +30,31 @@ export default function Home() {
 
   // Automatically advance to next player or board
   const advanceSelector = () => {
+    // Count only defined cards (not undefined)
+    const definedCardCounts = hands.map(hand => hand.filter(c => c !== undefined).length);
+    const definedBoardCount = board.filter(c => c !== undefined).length;
+
+    // Check if all players have full hands and the board is complete
+    const allCardsSelected = definedCardCounts.every(count => count === holeCardsNeeded) && definedBoardCount === 5;
+
+    // Don't advance the selector if all cards are selected
+    if (allCardsSelected) {
+      return;
+    }
+
     if (activeSelector === 'board') {
-      if (board.length < 5) {
+      if (definedBoardCount < 5) {
         return;
       }
       // Set back to first player instead of null
       setActiveSelector(0);
     } else if (typeof activeSelector === 'number') {
-      if (hands[activeSelector].length < holeCardsNeeded) {
+      if (definedCardCounts[activeSelector] < holeCardsNeeded) {
         return;
       }
       if (activeSelector < hands.length - 1) {
         setActiveSelector(activeSelector + 1);
-      } else if (board.length < 5) {
+      } else if (definedBoardCount < 5) {
         setActiveSelector('board');
       } else {
         // Set back to first player instead of null
@@ -59,26 +71,66 @@ export default function Home() {
   const handleCardSelect = (card: CardType) => {
     // No need to check for null as we changed the type
     if (activeSelector === 'board') {
-      if (board.length < 5) {
-        setBoard([...board, card]);
+      if (board.filter(c => c !== undefined).length < 5) {
+        // Find the first empty slot (undefined value) or append to the end
+        const emptyIndex = board.findIndex(c => c === undefined);
+        if (emptyIndex !== -1) {
+          const newBoard = [...board];
+          newBoard[emptyIndex] = card;
+          setBoard(newBoard);
+        } else {
+          setBoard([...board, card]);
+        }
       }
     } else {
-      if (hands[activeSelector].length < holeCardsNeeded) {
-        const newHands = [...hands];
-        newHands[activeSelector] = [...hands[activeSelector], card];
-        setHands(newHands);
+      if (hands[activeSelector].filter(c => c !== undefined).length < holeCardsNeeded) {
+        // Find the first empty slot (undefined value) or append to the end
+        const emptyIndex = hands[activeSelector].findIndex(c => c === undefined);
+        if (emptyIndex !== -1) {
+          const newHands = [...hands];
+          newHands[activeSelector] = [...hands[activeSelector]];
+          newHands[activeSelector][emptyIndex] = card;
+          setHands(newHands);
+        } else {
+          const newHands = [...hands];
+          newHands[activeSelector] = [...hands[activeSelector], card];
+          setHands(newHands);
+        }
       }
     }
   };
 
+  // Add a function to remove a card when clicked
+  const handleCardRemove = (playerIndex: number | 'board', cardIndex: number) => {
+    if (playerIndex === 'board') {
+      // Remove card from board but maintain positions
+      const newBoard = [...board];
+      newBoard[cardIndex] = undefined;
+      setBoard(newBoard);
+      setEquity(null); // Reset equity calculation when cards change
+    } else {
+      // Remove card from player's hand but maintain positions
+      const newHands = [...hands];
+      newHands[playerIndex] = [...newHands[playerIndex]];
+      newHands[playerIndex][cardIndex] = undefined;
+      setHands(newHands);
+      setEquity(null); // Reset equity calculation when cards change
+    }
+  };
+
   const calculateResults = () => {
-    if (hands.every(hand => hand.length === holeCardsNeeded)) {
+    // Filter out undefined cards before calculation
+    const validHands = hands.map(hand => hand.filter((card): card is CardType => card !== undefined));
+    const validBoard = board.filter((card): card is CardType => card !== undefined);
+
+    // Make sure each hand has the exact number of cards needed
+    if (validHands.every(hand => hand.length === holeCardsNeeded)) {
       setIsCalculating(true);
 
       // Use setTimeout to allow the UI to update before starting the calculation
       setTimeout(() => {
         try {
-          const result = calculateMultiplayerEquity(hands, board, gameType);
+          const result = calculateMultiplayerEquity(validHands, validBoard, gameType);
           setEquity(result);
         } catch (error) {
           console.error('Error calculating equity:', error);
@@ -91,6 +143,7 @@ export default function Home() {
   };
 
   const reset = () => {
+    // Reset to empty arrays, not arrays with undefined values
     setHands(Array(hands.length).fill([]));
     setBoard([]);
     setEquity(null);
@@ -217,17 +270,22 @@ export default function Home() {
                 <div className="flex gap-2 flex-wrap">
                   {Array.from({ length: holeCardsNeeded }).map((_, i) => (
                     <div key={i} className="w-10 h-14 sm:w-12 sm:h-16">
-                      <Card key={i} card={hand[i]} />
+                      <Card
+                        key={i}
+                        card={hand[i]}
+                        onClick={hand[i] ? () => handleCardRemove(index, i) : undefined}
+                      />
                     </div>
                   ))}
                 </div>
-                {hand.length > 0 && (
+                {hands[index].some(card => card !== undefined) && (
                   <button
                     className="text-xs px-1.5 py-0.5 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 self-center ml-2 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
                     onClick={(e) => {
                       e.stopPropagation();
                       const newHands = [...hands];
-                      newHands[index] = [];
+                      // Clear by setting all cards to undefined
+                      newHands[index] = Array(holeCardsNeeded).fill(undefined);
                       setHands(newHands);
                       setEquity(null);
                     }}
@@ -243,7 +301,7 @@ export default function Home() {
         {/* Board section - moved to below players */}
         <div
           onClick={() => setActiveSelector('board')}
-          className={`mb-6 space-y-3 p-4 rounded-lg transition-all cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/30 ${
+          className={`mb-3 space-y-3 p-4 rounded-lg transition-all cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/30 ${
             activeSelector === 'board'
               ? 'ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/30'
               : 'bg-white shadow dark:bg-gray-800 dark:shadow-gray-700/20'
@@ -251,12 +309,13 @@ export default function Home() {
         >
           <div className="flex items-center justify-between">
             <h2 className="text-lg sm:text-xl font-semibold dark:text-white">Board</h2>
-            {board.length > 0 && (
+            {board.some(card => card !== undefined) && (
               <button
                 className="text-xs px-1.5 py-0.5 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setBoard([]);
+                  // Clear by setting all cards to undefined
+                  setBoard(Array(5).fill(undefined));
                   setEquity(null);
                 }}
               >
@@ -267,10 +326,24 @@ export default function Home() {
           <div className="flex gap-2 flex-wrap justify-center">
             {[0, 1, 2, 3, 4].map(i => (
               <div key={i} className="w-10 h-14 sm:w-12 sm:h-16">
-                <Card key={i} card={board[i]} />
+                <Card
+                  key={i}
+                  card={board[i]}
+                  onClick={board[i] ? () => handleCardRemove('board', i) : undefined}
+                />
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Card removal hint */}
+        <div className="text-center text-xs text-gray-500 dark:text-gray-400 mb-6">
+          <span className="inline-flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+            Tip: Click on any placed card to remove it
+          </span>
         </div>
 
         {/* Action buttons */}
@@ -278,7 +351,13 @@ export default function Home() {
           <button
             onClick={calculateResults}
             className="flex-1 sm:flex-none px-6 py-3 bg-green-500 text-white rounded-lg font-semibold disabled:opacity-50 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700"
-            disabled={!hands.every(hand => hand.length === holeCardsNeeded) || isCalculating}
+            disabled={
+              // Only check player hands for completeness, board can have any number of cards (0-5)
+              !hands.every(hand =>
+                hand.filter(card => card !== undefined).length === holeCardsNeeded
+              ) ||
+              isCalculating
+            }
           >
             {isCalculating ? 'Calculating...' : 'Calculate Equity'}
           </button>
@@ -298,11 +377,11 @@ export default function Home() {
             selectedCards={[
               ...board,
               ...hands.flatMap((hand) => hand),
-            ].filter(Boolean)}
+            ].filter((card): card is CardType => card !== undefined)}
             disabledCards={[
-              ...board.filter(Boolean),
-              ...hands.flatMap((hand) => hand.filter(Boolean)),
-            ]}
+              ...board,
+              ...hands.flatMap((hand) => hand),
+            ].filter((card): card is CardType => card !== undefined)}
             gameType={gameType}
           />
         </div>
