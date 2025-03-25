@@ -66,8 +66,8 @@ export function calculateMultiplayerEquity(
     throw new Error('Number of players must be between 2 and 6');
   }
 
-  let wins = new Array(hands.length).fill(0);
-  let ties = new Array(hands.length).fill(0);
+  const wins = new Array(hands.length).fill(0);
+  const ties = new Array(hands.length).fill(0);
 
   // Convert cards to pokersolver format
   const formatCard = (card: Card) => `${card.rank}${card.suit}`;
@@ -99,7 +99,7 @@ export function calculateMultiplayerEquity(
         const boardCardCombos = combinations(finalBoard, 3);
 
         // Find the best hand among all possible combinations
-        let bestHand: any = null;
+        let bestHand: Hand | null = null;
         for (const holeComb of holeCardCombos) {
           for (const boardComb of boardCardCombos) {
             const currentHand = Hand.solve([...holeComb, ...boardComb]);
@@ -108,7 +108,8 @@ export function calculateMultiplayerEquity(
             }
           }
         }
-        return bestHand
+        // Return a default hand if bestHand is null (should never happen)
+        return bestHand || Hand.solve([...hand.slice(0, 2), ...finalBoard.slice(0, 3)]);
       } else if (gameType === 'super-holdem') {
         // For Super Hold'em, players can use any of their hole cards with any board cards
         // We need to find the best 5-card hand from any 7 cards chosen from the 8 available cards
@@ -117,7 +118,7 @@ export function calculateMultiplayerEquity(
         const allCards = [...hand, ...finalBoard];
 
         // If we have 8 cards (full 3 hole cards + 5 board cards), generate all combinations of 7
-        let bestHand: any = null;
+        let bestHand: Hand | null = null;
 
         if (allCards.length > 7) {
           // Generate all combinations of 7 cards from the available cards
@@ -135,7 +136,8 @@ export function calculateMultiplayerEquity(
           bestHand = Hand.solve(allCards);
         }
 
-        return bestHand;
+        // Return a default hand if bestHand is null (should never happen)
+        return bestHand || Hand.solve(allCards);
       } else if (gameType === 'texas-holdem') {
         // For other game types, we use all hole cards and board cards
         return Hand.solve([...hand, ...finalBoard]);
@@ -154,18 +156,22 @@ export function calculateMultiplayerEquity(
     for (const remainingBoard of possibleBoards) {
       const finalBoard = [...boardStr, ...remainingBoard];
       const results = evaluateHands(finalBoard, handStrs);
-      const winners = Hand.winners(results);
+      // Filter out any null values (though there shouldn't be any)
+      const validResults = results.filter((result): result is Hand => result !== null);
+      const winners = Hand.winners(validResults);
 
       if (winners.length > 1) {
         // For each player in the tie, increment their tie counter
         results.forEach((result, index) => {
-          if (winners.includes(result)) {
+          if (result && winners.includes(result)) {
             ties[index]++;
           }
         });
-      } else {
+      } else if (winners.length === 1) {
         const winnerIndex = results.findIndex(result => result === winners[0]);
-        wins[winnerIndex]++;
+        if (winnerIndex !== -1) {
+          wins[winnerIndex]++;
+        }
       }
     }
 
@@ -190,18 +196,22 @@ export function calculateMultiplayerEquity(
       const shuffledDeck = shuffle(deck);
       const finalBoard = [...boardStr, ...shuffledDeck.slice(0, remainingCards)];
       const results = evaluateHands(finalBoard, handStrs);
-      const winners = Hand.winners(results);
+      // Filter out any null values (though there shouldn't be any)
+      const validResults = results.filter((result): result is Hand => result !== null);
+      const winners = Hand.winners(validResults);
 
       if (winners.length > 1) {
         // For each player in the tie, increment their tie counter
         results.forEach((result, index) => {
-          if (winners.includes(result)) {
+          if (result && winners.includes(result)) {
             ties[index]++;
           }
         });
-      } else {
+      } else if (winners.length === 1) {
         const winnerIndex = results.findIndex(result => result === winners[0]);
-        wins[winnerIndex]++;
+        if (winnerIndex !== -1) {
+          wins[winnerIndex]++;
+        }
       }
     }
 

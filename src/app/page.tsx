@@ -23,7 +23,8 @@ export default function Home() {
   const [gameType, setGameType] = useState<GameType>('texas-holdem');
   const [isCalculating, setIsCalculating] = useState(false);
 
-  const allCards = [...hands.flat(), ...board];
+  // Remove or comment out the unused allCards variable
+  // const allCards = [...hands.flat(), ...board];
   const holeCardsNeeded = HOLE_CARDS_COUNT[gameType];
 
   // Automatically advance to next player or board
@@ -52,7 +53,7 @@ export default function Home() {
   // Check if we should advance after each card selection
   useEffect(() => {
     advanceSelector();
-  }, [hands, board]);
+  }, [hands, board, advanceSelector]);
 
   const handleCardSelect = (card: CardType) => {
     // No need to check for null as we changed the type
@@ -141,10 +142,10 @@ export default function Home() {
               }}
               className="w-full sm:w-auto px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="texas-holdem">Texas Hold'em</option>
-              <option value="super-holdem">Super Hold'em (3 cards)</option>
-              <option value="omaha-holdem">Omaha Hold'em</option>
-              {/* <option value="short-deck">Short Deck (6+ Hold'em)</option> */}
+              <option value="texas-holdem">Texas Hold&apos;em</option>
+              <option value="super-holdem">Super Hold&apos;em (3 cards)</option>
+              <option value="omaha-holdem">Omaha Hold&apos;em</option>
+              {/* <option value="short-deck">Short Deck (6+ Hold&apos;em)</option> */}
             </select>
           </div>
           <div className="flex gap-3 w-full sm:w-auto">
