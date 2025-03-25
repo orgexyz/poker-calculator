@@ -19,13 +19,13 @@ export function Card({ card, onClick, selected, disabled }: CardProps) {
         {
           'cursor-pointer hover:scale-105': !disabled && onClick,
           'cursor-not-allowed opacity-50': disabled,
-          'bg-white': card && !selected,
-          'bg-gray-100': !card,
+          'bg-white dark:bg-gray-800': card && !selected,
+          'bg-gray-100 dark:bg-gray-700': !card,
           'bg-blue-500 text-white': selected,
           'border-blue-500': selected,
-          'border-gray-200': !selected,
-          'text-red-600': isRed && !selected,
-          'text-black': !isRed && !selected,
+          'border-gray-200 dark:border-gray-600': !selected,
+          'text-red-600 dark:text-red-400': isRed && !selected,
+          'text-black dark:text-gray-200': !isRed && !selected,
         }
       )}
     >
@@ -35,7 +35,7 @@ export function Card({ card, onClick, selected, disabled }: CardProps) {
           {SUIT_SYMBOLS[card.suit as keyof typeof SUIT_SYMBOLS]}
         </div>
       ) : (
-        <div className="text-gray-400 text-sm sm:text-base">?</div>
+        <div className="text-gray-400 dark:text-gray-500 text-sm sm:text-base">?</div>
       )}
     </div>
   );

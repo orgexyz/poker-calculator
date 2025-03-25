@@ -45,7 +45,7 @@ export function CardSelector({ onSelect, selectedCards, disabledCards = [], game
   }, [ranks]);
 
   return (
-    <div className="p-2 sm:p-4 bg-white rounded-lg shadow-md overflow-x-auto max-h-[70vh] overflow-y-auto">
+    <div className="p-2 sm:p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-900/20 overflow-x-auto max-h-[70vh] overflow-y-auto">
       <div className="grid grid-cols-13 gap-2 sm:gap-3">
         {allCards.map((card) => (
           <div

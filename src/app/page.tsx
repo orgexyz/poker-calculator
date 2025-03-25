@@ -115,16 +115,16 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen px-4 py-6 sm:p-8">
-      <div className="text-center text-xs text-gray-500 mb-1">
-        Made with ❤️ by <a href="https://twitter.com/nomorebear" target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-700">Swit</a> & <a href="https://twitter.com/PNattapatsiri" target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-700">Paul</a> from <a href="https://orge.xyz/" target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-700">Orge Labs</a>
+    <main className="min-h-screen px-4 py-6 sm:p-8 dark:bg-gray-900">
+      <div className="text-center text-xs text-gray-500 dark:text-gray-400 mb-1">
+        Made with ❤️ by <a href="https://twitter.com/nomorebear" target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-700 dark:hover:text-gray-300">Swit</a> & <a href="https://twitter.com/PNattapatsiri" target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-700 dark:hover:text-gray-300">Paul</a> from <a href="https://orge.xyz/" target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-700 dark:hover:text-gray-300">Orge Labs</a>
       </div>
-      <h1 className="text-2xl sm:text-4xl font-bold mb-6 sm:mb-8 pt-3 text-center">
+      <h1 className="text-2xl sm:text-4xl font-bold mb-6 sm:mb-8 pt-3 text-center dark:text-white">
         Poker Equity Calculator
         <span className="inline-block ml-2 text-amber-500 cursor-help relative group text-sm align-text-top">
           ⓘ
-          <span className="hidden group-hover:block absolute top-full left-1/2 transform -translate-x-1/2 w-72 p-2 bg-gray-800 text-white text-xs leading-tight rounded shadow-lg z-10 mt-1">
-            For optimal mobile performance, this calculator uses a Monte Carlo simulation with random runouts. While this provides a close approximation rather than exact equity, it ensures fast calculations across all devices.
+          <span className="hidden group-hover:block absolute top-full left-1/2 transform -translate-x-1/2 w-72 p-2 bg-gray-800 text-white dark:bg-gray-700 text-xs leading-tight rounded shadow-lg z-10 mt-1">
+            For optimal mobile performance, this calculator uses a Monte Carlo simulation with 20,000 random runouts. While this provides a close approximation rather than exact equity, it ensures fast calculations across all devices.
           </span>
         </span>
       </h1>
@@ -133,14 +133,14 @@ export default function Home() {
         {/* Game controls */}
         <div className="flex flex-col sm:flex-row justify-center gap-3 mb-6 sm:mb-8">
           <div className="w-full sm:w-auto flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
-            <label className="font-medium">Game Type:</label>
+            <label className="font-medium dark:text-white">Game Type:</label>
             <select
               value={gameType}
               onChange={(e) => {
                 setGameType(e.target.value as GameType);
                 reset();
               }}
-              className="w-full sm:w-auto px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full sm:w-auto px-3 py-2 rounded border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
             >
               <option value="texas-holdem">Texas Hold&apos;em</option>
               <option value="super-holdem">Super Hold&apos;em (3 cards)</option>
@@ -152,14 +152,14 @@ export default function Home() {
             <button
               onClick={addPlayer}
               disabled={hands.length >= MAX_PLAYERS}
-              className="flex-1 sm:flex-none px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
+              className="flex-1 sm:flex-none px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
             >
               Add Player
             </button>
             <button
               onClick={removePlayer}
               disabled={hands.length <= 2}
-              className="flex-1 sm:flex-none px-4 py-2 bg-red-500 text-white rounded disabled:opacity-50"
+              className="flex-1 sm:flex-none px-4 py-2 bg-red-500 text-white rounded disabled:opacity-50 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700"
             >
               Remove Player
             </button>
@@ -172,18 +172,20 @@ export default function Home() {
             <div
               key={index}
               onClick={() => setActiveSelector(index)}
-              className={`space-y-3 p-4 rounded-lg transition-all cursor-pointer hover:bg-blue-50 ${
-                activeSelector === index ? 'ring-2 ring-blue-500 bg-blue-50' : 'bg-white shadow'
+              className={`space-y-3 p-4 rounded-lg transition-all cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/30 ${
+                activeSelector === index
+                  ? 'ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/30'
+                  : 'bg-white shadow dark:bg-gray-800 dark:shadow-gray-700/20'
               }`}
             >
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold">Player {index + 1}</h2>
+                <h2 className="text-lg font-semibold dark:text-white">Player {index + 1}</h2>
                 {equity && (
                   <div className="text-right">
-                    <div className="text-base sm:text-lg font-medium">
+                    <div className="text-base sm:text-lg font-medium dark:text-white">
                       Win: {(equity.equities[index] * 100).toFixed(1)}%
                     </div>
-                    <div className="text-xs sm:text-sm text-gray-600">
+                    <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                       Tie: {(equity.ties[index] * 100).toFixed(1)}%
                     </div>
                   </div>
@@ -199,7 +201,7 @@ export default function Home() {
                 </div>
                 {hand.length > 0 && (
                   <button
-                    className="text-xs px-1.5 py-0.5 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 self-center ml-2"
+                    className="text-xs px-1.5 py-0.5 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 self-center ml-2 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
                     onClick={(e) => {
                       e.stopPropagation();
                       const newHands = [...hands];
@@ -219,15 +221,17 @@ export default function Home() {
         {/* Board section - moved to below players */}
         <div
           onClick={() => setActiveSelector('board')}
-          className={`mb-6 space-y-3 p-4 rounded-lg transition-all cursor-pointer hover:bg-blue-50 ${
-            activeSelector === 'board' ? 'ring-2 ring-blue-500 bg-blue-50' : 'bg-white shadow'
+          className={`mb-6 space-y-3 p-4 rounded-lg transition-all cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/30 ${
+            activeSelector === 'board'
+              ? 'ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/30'
+              : 'bg-white shadow dark:bg-gray-800 dark:shadow-gray-700/20'
           }`}
         >
           <div className="flex items-center justify-between">
-            <h2 className="text-lg sm:text-xl font-semibold">Board</h2>
+            <h2 className="text-lg sm:text-xl font-semibold dark:text-white">Board</h2>
             {board.length > 0 && (
               <button
-                className="text-xs px-1.5 py-0.5 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+                className="text-xs px-1.5 py-0.5 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
                 onClick={(e) => {
                   e.stopPropagation();
                   setBoard([]);
@@ -251,14 +255,14 @@ export default function Home() {
         <div className="flex gap-3 justify-center mb-6">
           <button
             onClick={calculateResults}
-            className="flex-1 sm:flex-none px-6 py-3 bg-green-500 text-white rounded-lg font-semibold disabled:opacity-50"
+            className="flex-1 sm:flex-none px-6 py-3 bg-green-500 text-white rounded-lg font-semibold disabled:opacity-50 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700"
             disabled={!hands.every(hand => hand.length === holeCardsNeeded) || isCalculating}
           >
             {isCalculating ? 'Calculating...' : 'Calculate Equity'}
           </button>
           <button
             onClick={reset}
-            className="flex-1 sm:flex-none px-6 py-3 bg-red-500 text-white rounded-lg font-semibold"
+            className="flex-1 sm:flex-none px-6 py-3 bg-red-500 text-white rounded-lg font-semibold hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700"
             disabled={isCalculating}
           >
             Reset
@@ -266,7 +270,7 @@ export default function Home() {
         </div>
 
         {/* Card selector */}
-        <div className="mt-6 bg-white shadow rounded-lg overflow-x-auto">
+        <div className="mt-6 bg-white dark:bg-gray-800 shadow rounded-lg overflow-x-auto">
           <CardSelector
             onSelect={handleCardSelect}
             selectedCards={[
@@ -283,11 +287,11 @@ export default function Home() {
 
         {/* Loading overlay */}
         {isCalculating && (
-          <div className="fixed inset-0 bg-black/50 flex flex-col items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+          <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex flex-col items-center justify-center z-50">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg text-center">
               <div className="animate-spin w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-              <p className="text-lg font-medium">Calculating equity...</p>
-              <p className="text-sm text-gray-500 mt-2">This might take a moment</p>
+              <p className="text-lg font-medium dark:text-white">Calculating equity...</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">This might take a moment</p>
             </div>
           </div>
         )}
